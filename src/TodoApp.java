@@ -30,6 +30,7 @@ public class TodoApp {
         JScrollPane scrollPane = new JScrollPane(taskList);
         JTextField input = new JTextField();
         JButton addButton = new JButton("Add");
+        JButton deleteButton = new JButton("Delete");
         taskList.setCellRenderer(new TaskRenderer());
 
         taskList.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -64,9 +65,28 @@ public class TodoApp {
             }
         });
 
+        deleteButton.addActionListener(e -> {
+            int index = taskList.getSelectedIndex();
+            if (index >= 0) {
+                Task t = listModel.getElementAt(index);
+                manager.remove(t);
+                listModel.remove(index);
+                try {
+                    manager.save();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(input, BorderLayout.CENTER);
-        bottomPanel.add(addButton, BorderLayout.EAST);
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.add(addButton);
+        buttonsPanel.add(deleteButton);
+
+        bottomPanel.add(buttonsPanel, BorderLayout.EAST);
 
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.add(bottomPanel, BorderLayout.SOUTH);
