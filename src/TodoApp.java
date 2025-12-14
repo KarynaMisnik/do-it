@@ -2,6 +2,8 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 public class TodoApp {
 
@@ -23,10 +25,11 @@ public class TodoApp {
         }
 
         JFrame frame = new JFrame("Todo App");
-        frame.setSize(400, 300);
+        frame.setSize(800, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JList<Task> taskList = new JList<>(listModel);
+        taskList.setFixedCellHeight(32);
         JScrollPane scrollPane = new JScrollPane(taskList);
         JTextField input = new JTextField();
         JButton addButton = new JButton("Add");
@@ -37,14 +40,20 @@ public class TodoApp {
 
         /* Swing "styling" */
 
-        addButton.setBackground(new Color(76, 175, 80)); // green
+        addButton.setBackground(new Color(0, 153, 0)); // green
         addButton.setForeground(Color.WHITE);
 
-        editButton.setBackground(new Color(158, 158, 158)); // gray
+        editButton.setBackground(new Color(51, 153, 255)); // blue
         editButton.setForeground(Color.WHITE);
 
-        deleteButton.setBackground(new Color(244, 67, 54)); // red
+        deleteButton.setBackground(new Color(204, 0, 0)); // red
         deleteButton.setForeground(Color.WHITE);
+
+        /* Fonts */
+        Font btnFont = new Font("Roboto", Font.BOLD, 14);
+        addButton.setFont(btnFont);
+        editButton.setFont(btnFont);
+        deleteButton.setFont(btnFont);
 
         /* Disable default style */
 

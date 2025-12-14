@@ -1,6 +1,8 @@
 package src;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 
 /*  Each task is shown as a checkbox
@@ -20,6 +22,8 @@ public class TaskRenderer extends JCheckBox implements ListCellRenderer<Task> {
 
         setText(task.getTitle());
         setSelected(task.isDone());
+        setFont(new Font("Roboto", Font.PLAIN, 16));
+        setBorder(new EmptyBorder(6, 6, 6, 6));
 
         if (task.isDone()) {
             setText("<html><strike>" + task.getTitle() + "</strike></html>");
