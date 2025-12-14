@@ -25,6 +25,10 @@ public class Task {
         done = !done;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @Override
     public String toString() {
         return (done ? "[x] " : "[ ] ") + title;

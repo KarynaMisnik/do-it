@@ -31,7 +31,30 @@ public class TodoApp {
         JTextField input = new JTextField();
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete");
+        JButton editButton = new JButton("Edit");
+        editButton.setEnabled(false); // initially disabled
         taskList.setCellRenderer(new TaskRenderer());
+
+        /* Swing "styling" */
+
+        addButton.setBackground(new Color(76, 175, 80)); // green
+        addButton.setForeground(Color.WHITE);
+
+        editButton.setBackground(new Color(158, 158, 158)); // gray
+        editButton.setForeground(Color.WHITE);
+
+        deleteButton.setBackground(new Color(244, 67, 54)); // red
+        deleteButton.setForeground(Color.WHITE);
+
+        /* Disable default style */
+
+        addButton.setFocusPainted(false);
+        editButton.setFocusPainted(false);
+        deleteButton.setFocusPainted(false);
+
+        addButton.setOpaque(true);
+        editButton.setOpaque(true);
+        deleteButton.setOpaque(true);
 
         taskList.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -48,6 +71,12 @@ public class TodoApp {
                     }
                 }
             }
+        });
+
+        taskList.addListSelectionListener(e -> {
+            boolean selected = taskList.getSelectedIndex() >= 0;
+            deleteButton.setEnabled(selected);
+            editButton.setEnabled(selected);
         });
 
         addButton.addActionListener(e -> {
@@ -79,12 +108,33 @@ public class TodoApp {
             }
         });
 
+        editButton.addActionListener(e -> {
+            int index = taskList.getSelectedIndex();
+            if (index >= 0) {
+                Task t = listModel.getElementAt(index);
+                String newTitle = JOptionPane.showInputDialog(
+                        frame,
+                        "Edit task:",
+                        t.getTitle());
+                if (newTitle != null && !newTitle.trim().isEmpty()) {
+                    t.setTitle(newTitle.trim());
+                    taskList.repaint();
+                    try {
+                        manager.save();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(input, BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.add(addButton);
         buttonsPanel.add(deleteButton);
+        buttonsPanel.add(editButton);
 
         bottomPanel.add(buttonsPanel, BorderLayout.EAST);
 
