@@ -21,6 +21,10 @@ public class Task {
         done = true;
     }
 
+    public void toggleDone() {
+        done = !done;
+    }
+
     @Override
     public String toString() {
         return (done ? "[x] " : "[ ] ") + title;
