@@ -2,8 +2,6 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 public class TodoApp {
 
@@ -32,6 +30,7 @@ public class TodoApp {
         taskList.setFixedCellHeight(32);
         JScrollPane scrollPane = new JScrollPane(taskList);
         JTextField input = new JTextField();
+        input.setFont(new Font("Roboto", Font.PLAIN, 32));
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete");
         JButton editButton = new JButton("Edit");
@@ -50,7 +49,7 @@ public class TodoApp {
         deleteButton.setForeground(Color.WHITE);
 
         /* Fonts */
-        Font btnFont = new Font("Roboto", Font.BOLD, 14);
+        Font btnFont = new Font("Roboto", Font.BOLD, 28);
         addButton.setFont(btnFont);
         editButton.setFont(btnFont);
         deleteButton.setFont(btnFont);

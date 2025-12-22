@@ -22,7 +22,7 @@ public class TaskRenderer extends JCheckBox implements ListCellRenderer<Task> {
 
         setText(task.getTitle());
         setSelected(task.isDone());
-        setFont(new Font("Roboto", Font.PLAIN, 16));
+        setFont(new Font("Roboto", Font.PLAIN, 32));
         setBorder(new EmptyBorder(6, 6, 6, 6));
 
         if (task.isDone()) {
