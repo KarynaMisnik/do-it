@@ -13,83 +13,39 @@ public class TodoApp {
         manager = new TaskManager();
         listModel = new DefaultListModel<>();
 
-        // Load tasks from database
-        for (Task t : manager.getTasks()) {
-            listModel.addElement(t);
-        }
-
-        JFrame frame = new JFrame("Todo App");
+        JFrame frame = new JFrame("Todo App (JDBC CRUD)");
         frame.setSize(800, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        // Task list
+        // =========================
+        // READ (SELECT from DB)
+        // =========================
+        loadTasksFromDatabase();
+
         JList<Task> taskList = new JList<>(listModel);
         taskList.setFixedCellHeight(32);
         taskList.setCellRenderer(new TaskRenderer());
 
         JScrollPane scrollPane = new JScrollPane(taskList);
 
-        // Input field
         JTextField input = new JTextField();
         input.setFont(new Font("Roboto", Font.PLAIN, 32));
 
-        // Buttons
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete");
         JButton editButton = new JButton("Edit");
 
         editButton.setEnabled(false);
 
-        // Styling
         Font btnFont = new Font("Roboto", Font.BOLD, 28);
-
         addButton.setFont(btnFont);
         deleteButton.setFont(btnFont);
         editButton.setFont(btnFont);
 
-        addButton.setBackground(new Color(0, 153, 0));
-        addButton.setForeground(Color.WHITE);
-
-        deleteButton.setBackground(new Color(204, 0, 0));
-        deleteButton.setForeground(Color.WHITE);
-
-        editButton.setBackground(new Color(51, 153, 255));
-        editButton.setForeground(Color.WHITE);
-
-        addButton.setFocusPainted(false);
-        deleteButton.setFocusPainted(false);
-        editButton.setFocusPainted(false);
-
-        addButton.setOpaque(true);
-        deleteButton.setOpaque(true);
-        editButton.setOpaque(true);
-
-        // Toggle done on click
-        taskList.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                int index = taskList.locationToIndex(e.getPoint());
-
-                if (index >= 0) {
-                    Task t = listModel.getElementAt(index);
-
-                    t.toggleDone();
-                    manager.update(t); // DB update
-
-                    taskList.repaint();
-                }
-            }
-        });
-
-        // Enable/disable buttons
-        taskList.addListSelectionListener(e -> {
-            boolean selected = taskList.getSelectedIndex() >= 0;
-            deleteButton.setEnabled(selected);
-            editButton.setEnabled(selected);
-        });
-
-        // ADD TASK
+        // =========================
+        // CREATE (INSERT)
+        // =========================
         addButton.addActionListener(e -> {
             String text = input.getText().trim();
 
@@ -97,13 +53,15 @@ public class TodoApp {
                 Task t = new Task(text);
 
                 manager.add(t); // INSERT INTO DB
-                listModel.addElement(t);
+                listModel.addElement(t); // show in UI
 
                 input.setText("");
             }
         });
 
-        // DELETE TASK
+        // =========================
+        // DELETE (DELETE)
+        // =========================
         deleteButton.addActionListener(e -> {
             int index = taskList.getSelectedIndex();
 
@@ -115,7 +73,9 @@ public class TodoApp {
             }
         });
 
-        // EDIT TASK
+        // =========================
+        // UPDATE (EDIT title)
+        // =========================
         editButton.addActionListener(e -> {
             int index = taskList.getSelectedIndex();
 
@@ -136,7 +96,31 @@ public class TodoApp {
             }
         });
 
-        // Bottom panel
+        // Toggle done (also UPDATE)
+        taskList.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int index = taskList.locationToIndex(e.getPoint());
+
+                if (index >= 0) {
+                    Task t = listModel.getElementAt(index);
+
+                    t.toggleDone();
+
+                    manager.update(t); // UPDATE DB (done state)
+                    taskList.repaint();
+                }
+            }
+        });
+
+        // Enable buttons when item selected
+        taskList.addListSelectionListener(e -> {
+            boolean selected = taskList.getSelectedIndex() >= 0;
+            deleteButton.setEnabled(selected);
+            editButton.setEnabled(selected);
+        });
+
+        // Layout
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(input, BorderLayout.CENTER);
 
@@ -151,6 +135,17 @@ public class TodoApp {
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
+    }
+
+    // =========================
+    // READ (SELECT helper method)
+    // =========================
+    private void loadTasksFromDatabase() {
+        listModel.clear();
+
+        for (Task t : manager.getTasks()) {
+            listModel.addElement(t);
+        }
     }
 
     public static void main(String[] args) {

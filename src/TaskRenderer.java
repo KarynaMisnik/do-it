@@ -11,6 +11,7 @@ import java.awt.*;
 */
 
 public class TaskRenderer extends JCheckBox implements ListCellRenderer<Task> {
+    private static final Font FONT = new Font("Roboto", Font.PLAIN, 32);
 
     @Override
     public Component getListCellRendererComponent(
@@ -22,7 +23,7 @@ public class TaskRenderer extends JCheckBox implements ListCellRenderer<Task> {
 
         setText(task.getTitle());
         setSelected(task.isDone());
-        setFont(new Font("Roboto", Font.PLAIN, 32));
+        setFont(FONT);
         setBorder(new EmptyBorder(6, 6, 6, 6));
 
         if (task.isDone()) {
