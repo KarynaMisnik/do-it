@@ -1,73 +1,101 @@
 package src;
 
+import java.sql.*;
 import java.util.ArrayList;
-import java.io.*;
-import java.nio.file.*;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 
 public class TaskManager {
 
-    /*
-     * gson → the translator
-     * file → where tasks live on disk
-     */
-    private final Gson gson = new Gson();
-    private final Path file = Paths.get(System.getProperty("user.home"), ".todoapp", "tasks.json");
+    private final String url = "jdbc:mysql://localhost:3306/todo";
+    private final String user = "root";
+    private final String password = "";
 
-    private ArrayList<Task> tasks;
+    private ArrayList<Task> tasks = new ArrayList<>();
 
-    public TaskManager() {
-        tasks = new ArrayList<>();
-    }
-
+    // CREATE
     public void add(Task task) {
-        tasks.add(task);
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+
+            String sql = "INSERT INTO tasks (title, done) VALUES (?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            stmt.setString(1, task.getTitle());
+            stmt.setBoolean(2, task.isDone());
+
+            stmt.executeUpdate();
+
+            // get generated ID
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                task.setId(rs.getInt(1));
+            }
+
+            tasks.add(task);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
+    // DELETE
     public void remove(Task task) {
-        tasks.remove(task);
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+
+            String sql = "DELETE FROM tasks WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, task.getId());
+
+            stmt.executeUpdate();
+
+            tasks.remove(task);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
+    // READ
     public ArrayList<Task> getTasks() {
+        tasks.clear();
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+
+            String sql = "SELECT * FROM tasks";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Task t = new Task(rs.getString("title"));
+                t.setId(rs.getInt("id"));
+
+                if (rs.getBoolean("done")) {
+                    t.markDone();
+                }
+
+                tasks.add(t);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return tasks;
     }
 
-    /*
-     * Ensure folder exists
-     * Convert tasks → JSON
-     * Write to file
-     */
+    // UPDATE (mark done / toggle)
+    public void update(Task task) {
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
 
-    public void save() throws IOException {
-        Files.createDirectories(file.getParent());
-        try (Writer writer = Files.newBufferedWriter(file)) {
-            gson.toJson(tasks, writer);
+            String sql = "UPDATE tasks SET title=?, done=? WHERE id=?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setString(1, task.getTitle());
+            stmt.setBoolean(2, task.isDone());
+            stmt.setInt(3, task.getId());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-
-    /*
-     * If file doesn’t exist → nothing to load
-     * Read JSON
-     * Convert text→
-     * ArrayList<Task>
-     * Replace in-memory list
-     */
-    public void load() throws IOException {
-        if (Files.notExists(file))
-            return;
-
-        try (Reader reader = Files.newBufferedReader(file)) {
-            Type type = new TypeToken<ArrayList<Task>>() {
-            }.getType();
-            ArrayList<Task> loaded = gson.fromJson(reader, type);
-
-            if (loaded != null) {
-                tasks.clear();
-                tasks.addAll(loaded);
-            }
-        }
-    }
-
 }
