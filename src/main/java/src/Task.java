@@ -13,8 +13,12 @@ public class Task {
     private String title;
     private boolean done;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Task() {
-    } // REQUIRED by Hibernate
+    }
 
     public Task(String title) {
         this.title = title;
@@ -25,8 +29,11 @@ public class Task {
         this.done = true;
     }
 
-    // getters and setters
+    public void toggleDone() {
+        done = !done;
+    }
 
+    // getters/setters
     public int getId() {
         return id;
     }
@@ -39,19 +46,28 @@ public class Task {
         return title;
     }
 
-    public boolean isDone() {
-        return done;
-    }
-
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isDone() {
+        return done;
     }
 
     public void setDone(boolean done) {
         this.done = done;
     }
 
-    public void toggleDone() {
-        done = !done;
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return (done ? "[x] " : "[ ] ") + title;
     }
 }

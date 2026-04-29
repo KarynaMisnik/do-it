@@ -20,6 +20,7 @@
         <property name="hibernate.current_session_context_class">thread</property>
 
         <!-- Entity -->
+        <mapping class="src.User"/>
         <mapping class="src.Task"/>
 
     </session-factory>

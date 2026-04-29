@@ -19,9 +19,8 @@ public class TodoApp {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        // =========================
         // READ (SELECT from DB)
-        // =========================
+
         loadTasksFromDatabase();
 
         JList<Task> taskList = new JList<>(listModel);
@@ -44,9 +43,8 @@ public class TodoApp {
         deleteButton.setFont(btnFont);
         editButton.setFont(btnFont);
 
-        // =========================
         // CREATE (INSERT)
-        // =========================
+
         addButton.addActionListener(e -> {
             String text = input.getText().trim();
 
@@ -60,9 +58,8 @@ public class TodoApp {
             }
         });
 
-        // =========================
         // DELETE (DELETE)
-        // =========================
+
         deleteButton.addActionListener(e -> {
             int index = taskList.getSelectedIndex();
 
@@ -74,9 +71,8 @@ public class TodoApp {
             }
         });
 
-        // =========================
         // UPDATE (EDIT title)
-        // =========================
+
         editButton.addActionListener(e -> {
             int index = taskList.getSelectedIndex();
 
@@ -138,9 +134,8 @@ public class TodoApp {
         frame.setVisible(true);
     }
 
-    // =========================
     // READ (SELECT helper method)
-    // =========================
+
     private void loadTasksFromDatabase() {
         listModel.clear();
 

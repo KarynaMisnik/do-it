@@ -1,5 +1,6 @@
 src/TodoApp.class
 src/TaskManager.class
 src/TodoApp$1.class
+src/User.class
 src/TaskRenderer.class
 src/Task.class

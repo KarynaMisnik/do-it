@@ -15,6 +15,7 @@ public class TaskManager {
         factory = new Configuration()
                 .configure("hibernate.cfg.xml")
                 .addAnnotatedClass(Task.class)
+                .addAnnotatedClass(User.class)
                 .buildSessionFactory();
     }
 
@@ -24,6 +25,18 @@ public class TaskManager {
 
         try {
             session.beginTransaction();
+
+            // try to get existing user
+            User user = session.get(User.class, 1);
+
+            // if not exists → create one
+            if (user == null) {
+                user = new User("Default User");
+                session.persist(user);
+            }
+
+            // link task to user
+            task.setUser(user);
 
             session.persist(task);
 
@@ -42,7 +55,8 @@ public class TaskManager {
             session.beginTransaction();
 
             List<Task> result = session
-                    .createQuery("from Task", Task.class)
+                    .createQuery("from Task where user.id = :userId", Task.class)
+                    .setParameter("userId", 1)
                     .getResultList();
 
             tasks.addAll(result);
