@@ -1,6 +1,9 @@
 package src;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import src.Category;
 
 @Entity
 @Table(name = "tasks")
@@ -17,6 +20,11 @@ public class Task {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // Categories
+    @ManyToMany
+    @JoinTable(name = "task_category", joinColumns = @JoinColumn(name = "task_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> categories = new ArrayList<>();
+
     public Task() {
     }
 
@@ -31,6 +39,11 @@ public class Task {
 
     public void toggleDone() {
         done = !done;
+    }
+
+    // add new category
+    public void addCategory(Category category) {
+        categories.add(category);
     }
 
     // getters/setters
@@ -64,6 +77,14 @@ public class Task {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
     @Override
