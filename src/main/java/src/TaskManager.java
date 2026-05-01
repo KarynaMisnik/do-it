@@ -18,48 +18,62 @@ public class TaskManager {
                 .addAnnotatedClass(User.class)
                 .addAnnotatedClass(Category.class)
                 .addAnnotatedClass(Comment.class)
+                .addAnnotatedClass(Priority.class)
                 .buildSessionFactory();
 
     }
 
     // CREATE
     public void add(Task task) {
+
         Session session = factory.getCurrentSession();
 
         try {
             session.beginTransaction();
 
-            // creates or gets
+            // 1. Get or create user
             User user = session.get(User.class, 1);
 
-            // if not exists → create one
             if (user == null) {
                 user = new User("Default User");
                 session.persist(user);
-
-                // test comments
-                Comment c1 = new Comment("First comment");
-                Comment c2 = new Comment("Another note");
-
-                task.addComment(c1);
-                task.addComment(c2);
-
-                session.persist(task);
-
             }
 
-            session.getTransaction().commit();
-            // attaches
             task.setUser(user);
 
-            Category category = new Category("General");
+            // 2. Get or create category (avoid duplicates)
+            Category category = session
+                    .createQuery("from Category where name = :name", Category.class)
+                    .setParameter("name", "General")
+                    .uniqueResult();
+
+            if (category == null) {
+                category = new Category("General");
+                session.persist(category);
+            }
+
             task.addCategory(category);
 
-            // saves
-            session.persist(category);
+            // 3. Set default priority ONLY if not set in UI
+            if (task.getPriority() == null) {
+                Priority p = session
+                        .createQuery("from Priority where level = :level", Priority.class)
+                        .setParameter("level", "LOW")
+                        .uniqueResult();
+
+                if (p == null) {
+                    p = new Priority("LOW");
+                    session.persist(p);
+                }
+
+                task.setPriority(p);
+            }
+
+            // 4. Persist task ONCE
             session.persist(task);
 
             session.getTransaction().commit();
+
         } finally {
             session.close();
         }

@@ -32,6 +32,11 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    // Priority
+    @ManyToOne
+    @JoinColumn(name = "priority_id")
+    private Priority priority;
+
     public Task() {
     } // REQUIRED by Hibernate
 
@@ -89,6 +94,14 @@ public class Task {
 
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 
     public void toggleDone() {
