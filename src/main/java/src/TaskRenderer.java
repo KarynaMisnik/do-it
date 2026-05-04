@@ -5,11 +5,6 @@ import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
 
-/*  Each task is shown as a checkbox
-    If done → text is crossed out
-    Swing reuses this component to draw each row
-*/
-
 public class TaskRenderer extends JCheckBox implements ListCellRenderer<Task> {
     private static final Font FONT = new Font("Roboto", Font.PLAIN, 32);
 
