@@ -3,7 +3,7 @@ package src;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
+import src.Category;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +16,9 @@ public class TaskManager {
                 .configure("hibernate.cfg.xml")
                 .addAnnotatedClass(Task.class)
                 .addAnnotatedClass(User.class)
+                .addAnnotatedClass(Category.class)
                 .buildSessionFactory();
+
     }
 
     // CREATE
@@ -26,18 +28,24 @@ public class TaskManager {
         try {
             session.beginTransaction();
 
-            // try to get existing user
+            // creates or gets
             User user = session.get(User.class, 1);
 
             // if not exists → create one
             if (user == null) {
                 user = new User("Default User");
                 session.persist(user);
+
             }
 
-            // link task to user
+            // attaches
             task.setUser(user);
 
+            Category category = new Category("General");
+            task.addCategory(category);
+
+            // saves
+            session.persist(category);
             session.persist(task);
 
             session.getTransaction().commit();
