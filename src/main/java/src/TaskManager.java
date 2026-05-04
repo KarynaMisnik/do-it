@@ -17,6 +17,7 @@ public class TaskManager {
                 .addAnnotatedClass(Task.class)
                 .addAnnotatedClass(User.class)
                 .addAnnotatedClass(Category.class)
+                .addAnnotatedClass(Comment.class)
                 .buildSessionFactory();
 
     }
@@ -36,8 +37,18 @@ public class TaskManager {
                 user = new User("Default User");
                 session.persist(user);
 
+                // test comments
+                Comment c1 = new Comment("First comment");
+                Comment c2 = new Comment("Another note");
+
+                task.addComment(c1);
+                task.addComment(c2);
+
+                session.persist(task);
+
             }
 
+            session.getTransaction().commit();
             // attaches
             task.setUser(user);
 
@@ -102,6 +113,28 @@ public class TaskManager {
             Task t = session.get(Task.class, task.getId());
             if (t != null) {
                 session.remove(t);
+            }
+
+            session.getTransaction().commit();
+        } finally {
+            session.close();
+        }
+    }
+
+    public void addCommentToTask(int taskId, String text) {
+
+        Session session = factory.getCurrentSession();
+
+        try {
+            session.beginTransaction();
+
+            Task task = session.get(Task.class, taskId);
+
+            if (task != null) {
+                Comment comment = new Comment(text);
+                task.addComment(comment);
+
+                session.persist(task);
             }
 
             session.getTransaction().commit();

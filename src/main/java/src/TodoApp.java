@@ -35,6 +35,7 @@ public class TodoApp {
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete");
         JButton editButton = new JButton("Edit");
+        JButton commentButton = new JButton("Add Comment");
 
         editButton.setEnabled(false);
 
@@ -42,6 +43,7 @@ public class TodoApp {
         addButton.setFont(btnFont);
         deleteButton.setFont(btnFont);
         editButton.setFont(btnFont);
+        commentButton.setFont(btnFont);
 
         // CREATE (INSERT)
 
@@ -93,6 +95,24 @@ public class TodoApp {
             }
         });
 
+        commentButton.addActionListener(e -> {
+
+            int index = taskList.getSelectedIndex();
+
+            if (index >= 0) {
+                Task t = listModel.getElementAt(index);
+
+                String text = JOptionPane.showInputDialog(frame, "Enter comment:");
+
+                if (text != null && !text.trim().isEmpty()) {
+
+                    // IMPORTANT: persist via Hibernate-safe method
+                    manager.addCommentToTask(t.getId(), text.trim());
+
+                }
+            }
+        });
+
         // Toggle done (also UPDATE)
         taskList.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -125,6 +145,7 @@ public class TodoApp {
         buttonsPanel.add(addButton);
         buttonsPanel.add(deleteButton);
         buttonsPanel.add(editButton);
+        buttonsPanel.add(commentButton);
 
         bottomPanel.add(buttonsPanel, BorderLayout.EAST);
 
