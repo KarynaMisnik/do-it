@@ -31,49 +31,43 @@ public class TaskManager {
         try {
             session.beginTransaction();
 
-            // 1. Get or create user
-            User user = session.get(User.class, 1);
+            System.out.println("TRYING TO ADD TASK: " + task.getTitle());
 
+            // USER
+            User user = session.get(User.class, 1);
             if (user == null) {
                 user = new User("Default User");
                 session.persist(user);
             }
-
             task.setUser(user);
 
-            // 2. Get or create category (avoid duplicates)
-            Category category = session
-                    .createQuery("from Category where name = :name", Category.class)
-                    .setParameter("name", "General")
-                    .uniqueResult();
+            // PRIORITY
+            if (task.getPriority() != null) {
 
-            if (category == null) {
-                category = new Category("General");
-                session.persist(category);
-            }
+                String level = task.getPriority().getLevel();
 
-            task.addCategory(category);
-
-            // 3. Set default priority ONLY if not set in UI
-            if (task.getPriority() == null) {
-                Priority p = session
-                        .createQuery("from Priority where level = :level", Priority.class)
-                        .setParameter("level", "LOW")
+                Priority p = session.createQuery(
+                        "from Priority where level = :level", Priority.class)
+                        .setParameter("level", level)
                         .uniqueResult();
 
                 if (p == null) {
-                    p = new Priority("LOW");
+                    p = new Priority(level);
                     session.persist(p);
                 }
 
                 task.setPriority(p);
             }
 
-            // 4. Persist task ONCE
             session.persist(task);
 
             session.getTransaction().commit();
 
+            System.out.println("TASK ADDED OK");
+
+        } catch (Exception e) {
+            System.out.println("ERROR WHILE ADDING:");
+            e.printStackTrace(); // THIS is what we need
         } finally {
             session.close();
         }
@@ -81,6 +75,7 @@ public class TaskManager {
 
     // READ
     public ArrayList<Task> getTasks() {
+
         Session session = factory.getCurrentSession();
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -88,13 +83,15 @@ public class TaskManager {
             session.beginTransaction();
 
             List<Task> result = session
-                    .createQuery("from Task where user.id = :userId", Task.class)
-                    .setParameter("userId", 1)
+                    .createQuery("from Task", Task.class)
                     .getResultList();
 
             tasks.addAll(result);
 
             session.getTransaction().commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             session.close();
         }
