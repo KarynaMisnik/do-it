@@ -1,8 +1,8 @@
-/home/karyna/Documents/do-it/src/main/java/src/Comment.java
-/home/karyna/Documents/do-it/src/main/java/src/Priority.java
-/home/karyna/Documents/do-it/src/main/java/src/Category.java
-/home/karyna/Documents/do-it/src/main/java/src/TaskManager.java
-/home/karyna/Documents/do-it/src/main/java/src/User.java
-/home/karyna/Documents/do-it/src/main/java/src/TodoApp.java
-/home/karyna/Documents/do-it/src/main/java/src/Task.java
-/home/karyna/Documents/do-it/src/main/java/src/TaskRenderer.java
+/home/karyna/Documents/do-it/src/main/java/todo/Category.java
+/home/karyna/Documents/do-it/src/main/java/todo/Task.java
+/home/karyna/Documents/do-it/src/main/java/todo/Comment.java
+/home/karyna/Documents/do-it/src/main/java/todo/TaskRenderer.java
+/home/karyna/Documents/do-it/src/main/java/todo/TodoApp.java
+/home/karyna/Documents/do-it/src/main/java/todo/User.java
+/home/karyna/Documents/do-it/src/main/java/todo/TaskManager.java
+/home/karyna/Documents/do-it/src/main/java/todo/Priority.java

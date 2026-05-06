@@ -1,9 +1,11 @@
-package src;
+package todo;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import src.Category;
+
+import todo.Category;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,22 +28,28 @@ public class TaskManager {
     // CREATE
     public void add(Task task) {
 
-        Session session = factory.getCurrentSession();
+        Session session = factory.openSession();
 
         try {
             session.beginTransaction();
 
             System.out.println("TRYING TO ADD TASK: " + task.getTitle());
 
-            // USER
+            // =========================
+            // USER (managed)
+            // =========================
             User user = session.get(User.class, 1);
+
             if (user == null) {
                 user = new User("Default User");
                 session.persist(user);
             }
+
             task.setUser(user);
 
-            // PRIORITY
+            // =========================
+            // PRIORITY (managed)
+            // =========================
             if (task.getPriority() != null) {
 
                 String level = task.getPriority().getLevel();
@@ -59,6 +67,31 @@ public class TaskManager {
                 task.setPriority(p);
             }
 
+            // =========================
+            // CATEGORY (managed-safe fix)
+            // =========================
+            List<Category> safeCategories = new ArrayList<>();
+
+            for (Category c : task.getCategories()) {
+
+                Category existing = session.createQuery(
+                        "from Category where name = :name", Category.class)
+                        .setParameter("name", c.getName())
+                        .uniqueResult();
+
+                if (existing == null) {
+                    session.persist(c);
+                    safeCategories.add(c);
+                } else {
+                    safeCategories.add(existing);
+                }
+            }
+
+            task.setCategories(safeCategories);
+
+            // =========================
+            // SAVE TASK
+            // =========================
             session.persist(task);
 
             session.getTransaction().commit();
@@ -67,16 +100,18 @@ public class TaskManager {
 
         } catch (Exception e) {
             System.out.println("ERROR WHILE ADDING:");
-            e.printStackTrace(); // THIS is what we need
+            e.printStackTrace();
+            session.getTransaction().rollback(); // IMPORTANT FIX
         } finally {
             session.close();
         }
+
     }
 
     // READ
     public ArrayList<Task> getTasks() {
 
-        Session session = factory.getCurrentSession();
+        Session session = factory.openSession();
         ArrayList<Task> tasks = new ArrayList<>();
 
         try {
@@ -101,7 +136,7 @@ public class TaskManager {
 
     // UPDATE
     public void update(Task task) {
-        Session session = factory.getCurrentSession();
+        Session session = factory.openSession();
 
         try {
             session.beginTransaction();
@@ -116,7 +151,7 @@ public class TaskManager {
 
     // DELETE
     public void remove(Task task) {
-        Session session = factory.getCurrentSession();
+        Session session = factory.openSession();
 
         try {
             session.beginTransaction();
@@ -134,7 +169,7 @@ public class TaskManager {
 
     public void addCommentToTask(int taskId, String text) {
 
-        Session session = factory.getCurrentSession();
+        Session session = factory.openSession();
 
         try {
             session.beginTransaction();

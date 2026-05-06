@@ -1,4 +1,4 @@
-package src;
+package todo;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +9,7 @@ public class TodoApp {
     private DefaultListModel<Task> listModel;
 
     public TodoApp() {
+        System.out.println("TodoApp starting ...");
 
         manager = new TaskManager();
         listModel = new DefaultListModel<>();
@@ -55,8 +56,15 @@ public class TodoApp {
 
         editButton.setEnabled(false);
 
+        // ===========================
+        // CATEGORY
+        // ===========================
+        String[] categories = { "General", "Shopping", "Work", "Study" };
+        JComboBox<String> categoryBox = new JComboBox<>(categories);
+        categoryBox.setFont(new Font("Roboto", Font.BOLD, 18));
+
         // =========================
-        // ADD TASK (WITH PRIORITY)
+        // ADD TASK (WITH PRIORITY AND CATEGORY)
         // =========================
         addButton.addActionListener(e -> {
 
@@ -66,8 +74,13 @@ public class TodoApp {
 
                 Task t = new Task(text);
 
-                String selected = (String) priorityBox.getSelectedItem();
-                t.setPriority(new Priority(selected));
+                // priority
+                String selectedPriority = (String) priorityBox.getSelectedItem();
+                t.setPriority(new Priority(selectedPriority));
+
+                // category
+                String selectedCategory = (String) categoryBox.getSelectedItem();
+                t.addCategory(new Category(selectedCategory));
 
                 manager.add(t);
 
@@ -159,13 +172,18 @@ public class TodoApp {
         });
 
         // =========================
-        // LAYOUT (FIXED)
+        // LAYOUT
         // =========================
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new BorderLayout());
+
+        JPanel rightPanel = new JPanel();
+        rightPanel.add(priorityBox);
+        rightPanel.add(categoryBox);
+
         inputPanel.add(input, BorderLayout.CENTER);
-        inputPanel.add(priorityBox, BorderLayout.EAST);
+        inputPanel.add(rightPanel, BorderLayout.EAST);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.add(addButton);
@@ -178,7 +196,7 @@ public class TodoApp {
 
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.add(bottomPanel, BorderLayout.SOUTH);
-
+        System.out.println("GUI ready to show");
         frame.setVisible(true);
     }
 
@@ -196,4 +214,5 @@ public class TodoApp {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(TodoApp::new);
     }
+
 }

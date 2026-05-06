@@ -1,11 +1,12 @@
-package src;
+package todo;
 
 import jakarta.persistence.*;
+import todo.Category;
+import todo.Comment;
+import todo.User;
+
 import java.util.ArrayList;
 import java.util.List;
-import src.Category;
-import src.User;
-import src.Comment;
 
 @Entity
 @Table(name = "tasks")
@@ -19,45 +20,36 @@ public class Task {
     private boolean done;
 
     // User
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
     // Categories
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "task_category", joinColumns = @JoinColumn(name = "task_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories = new ArrayList<>();
 
     // Comments
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 
     // Priority
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "priority_id")
     private Priority priority;
 
+    // REQUIRED by Hibernate
     public Task() {
-    } // REQUIRED by Hibernate
+    }
 
     public Task(String title) {
         this.title = title;
         this.done = false;
     }
 
-    public void markDone() {
-        this.done = true;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    // getters and setters
+    // =========================
+    // BASIC GETTERS / SETTERS
+    // =========================
 
     public int getId() {
         return id;
@@ -83,17 +75,12 @@ public class Task {
         this.done = done;
     }
 
-    public void addCategory(Category category) {
-        categories.add(category);
+    public User getUser() {
+        return user;
     }
 
-    public void addComment(Comment comment) {
-        comments.add(comment);
-        comment.setTask(this);
-    }
-
-    public List<Comment> getComments() {
-        return comments;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Priority getPriority() {
@@ -104,7 +91,40 @@ public class Task {
         this.priority = priority;
     }
 
+    // =========================
+    // RELATIONSHIPS
+    // =========================
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setTask(this);
+    }
+
+    public void addCategory(Category category) {
+        categories.add(category);
+    }
+
+    // =========================
+    // LOGIC
+    // =========================
+
+    public void markDone() {
+        this.done = true;
+    }
+
     public void toggleDone() {
-        done = !done;
+        this.done = !this.done;
     }
 }
