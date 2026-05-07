@@ -36,7 +36,7 @@ public class TaskManager {
             System.out.println("TRYING TO ADD TASK: " + task.getTitle());
 
             // =========================
-            // USER (managed)
+            // USER
             // =========================
             User user = session.get(User.class, 1);
 
@@ -48,7 +48,7 @@ public class TaskManager {
             task.setUser(user);
 
             // =========================
-            // PRIORITY (managed)
+            // PRIORITY
             // =========================
             if (task.getPriority() != null) {
 
@@ -68,7 +68,7 @@ public class TaskManager {
             }
 
             // =========================
-            // CATEGORY (managed-safe fix)
+            // CATEGORY
             // =========================
             List<Category> safeCategories = new ArrayList<>();
 
